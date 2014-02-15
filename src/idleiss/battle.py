@@ -140,27 +140,14 @@ def ship_attack(attacker_ship, victim_ship):
     and return a new Ship object as the result.
     """
 
-    if not is_ship_alive(victim_ship):
-        # save us some time, it should be the same dead ship.
-        return victim_ship
-
-    if attacker_ship.debuffs.ECM:
-        # attacker is jammed can't attack or apply debuffs
+    if not is_ship_alive(victim_ship) or not can_launch_attack(attacker_ship):
         return victim_ship
 
     debuffs = grab_debuffs(attacker_ship, victim_ship)
 
     if attacker_ship.schema.firepower <= 0:
     # damage doesn't need to be calculated, but debuffs do
-        return Ship(
-            victim_ship.schema,
-            ShipAttributes(
-                victim_ship.attributes.shield,
-                victim_ship.attributes.armor,
-                victim_ship.attributes.hull,
-            ),
-            debuffs,
-        )
+        return Ship(victim_ship.schema, victim_ship.attributes, debuffs)
 
     damage = true_damage(attacker_ship.schema.firepower,
         attacker_ship.schema.weapon_size,
@@ -174,15 +161,7 @@ def ship_attack(attacker_ship, victim_ship):
     if shield == victim_ship.attributes.shield:
         # it glanced off, don't need to worry about hull breaches when
         # the weapon didn't even hit
-        return Ship(
-            victim_ship.schema,
-            ShipAttributes(
-                victim_ship.attributes.shield,
-                victim_ship.attributes.armor,
-                victim_ship.attributes.hull,
-            ),
-            debuffs,
-        )
+        return Ship(victim_ship.schema, victim_ship.attributes, debuffs)
 
     armor = victim_ship.attributes.armor + min(shield, 0)
     hull = hull_breach(victim_ship.attributes.hull,
