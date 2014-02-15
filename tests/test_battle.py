@@ -231,6 +231,15 @@ class BattleTestCase(TestCase):
         self.assertFalse(battle.is_ship_alive(ship2))
         self.assertFalse(battle.is_ship_alive(ship3))
 
+    def test_can_launch_attack(self):
+        library = ShipLibraryMock()
+        schema1 = library.get_ship_schemata('ship1')
+        ship1 = Ship(schema1, ShipAttributes(10, 10, 100))
+        ship2 = Ship(schema1, ShipAttributes(10, 10, 100),
+            ship._construct_tuple(ShipDebuffs, {'ECM': 1}))
+        self.assertTrue(battle.can_launch_attack(ship1))
+        self.assertFalse(battle.can_launch_attack(ship2))
+
     def test_shield_bounce(self):
         # less than default threshold, bounces off.
         self.assertEqual(battle.shield_bounce(101, 200, 1), 101)

@@ -125,6 +125,13 @@ def grab_debuffs(attacker_ship, victim_ship):
 
     return ShipDebuffs(target_painter, tracking_disruption, ecm, web)
 
+def can_launch_attack(attacker):
+    """
+    Test whether the attacker can launch an attack.
+    """
+
+    return not attacker.debuffs.ECM
+
 def ship_attack(attacker_ship, victim_ship):
     """
     Do a ship attack.
